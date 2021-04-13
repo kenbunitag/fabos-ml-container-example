@@ -1,0 +1,4 @@
+flask==1.1.2
+numpy==1.19.2
+pillow==8.0.1
+omegaconf==2.0.6
