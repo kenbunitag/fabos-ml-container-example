@@ -131,3 +131,5 @@ dmypy.json
 
 .vscode/
 tmp.jpg
+images/Hannovermesse.jpg
+mask_rcnn_result.png
