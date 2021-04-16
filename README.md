@@ -1,5 +1,5 @@
 # fabos-ml-container-example
-Example container that serves a pretrained ResNet-18 with a simple flask-based webserver.
+Example container that serves a pretrained ML Models with a simple flask-based webserver.
 
 
 ## Run as python app
