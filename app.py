@@ -1,7 +1,11 @@
 import ml_models
 from flask import Flask, flash, request, redirect, url_for, send_file
 app = Flask(__name__)
+import os
 
+#print(os.environ)
+if "TORCH_HOME" in os.environ:
+    print(f"using TORCH_HOME={os.environ['TORCH_HOME']}")
 resnet18 = ml_models.Resnet18Wrapper()
 mask_rcnn = ml_models.MaskRCNNWrapper()
 
