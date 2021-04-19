@@ -3,8 +3,24 @@ services:
   web:
     environment:
       - TORCH_HOME=/models
+      - REDIS_HOST=redis
     volumes:
       - ./models:/models
-    build: .
+    build: 
+      context: ./
+      dockerfile: ./app_web/Dockerfile
     ports:
       - "5000:5000"
+  
+  inference:
+    environment:
+      - TORCH_HOME=/models
+      - REDIS_HOST=redis
+    volumes:
+      - ./models:/models
+    build: 
+      context: ./
+      dockerfile: ./app_inference/Dockerfile
+
+  redis:
+    image: "redis:alpine"
