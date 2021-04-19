@@ -11,7 +11,13 @@ import matplotlib.pyplot as plt
 import cv2
 import random
 import time
+import math
 
+
+def get_opencv_img_from_buffer(buffer, flags):
+    bytes_as_np_array = np.frombuffer(buffer.read(), dtype=np.uint8)
+    return cv2.imdecode(bytes_as_np_array, flags)
+    
 class Resnet18Wrapper:
     def __init__(self):
         self.label_names = OmegaConf.load("labels.yaml")["labels"]
@@ -104,23 +110,40 @@ class MaskRCNNWrapper:
         return coloured_mask
 
 
-    def instance_segmentation_api(self, img_path, threshold=0.5, rect_th=3, text_size=3, text_th=3):
-        img = cv2.imread(img_path)
+    def instance_segmentation_api(self, img_path, threshold=0.5, rect_th=3, text_size=3, text_th=3, return_type="PIL") -> (Image, np.ndarray, list, list):
+        if isinstance(img_path, str):
+            img = cv2.imread(img_path)
+        else:
+            img = get_opencv_img_from_buffer(img_path, cv2.IMREAD_ANYCOLOR)
+        
+        scale_factor = min(1000 / img.shape[0], 1000 / img.shape[1])
+        if scale_factor < 1:
+            width = int(img.shape[1] * scale_factor)
+            height = int(img.shape[0] * scale_factor)
+            dim = (width, height)
+            img = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+        
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         im_pil = Image.fromarray(img)
 
         masks, boxes, pred_cls = self.get_prediction(im_pil, threshold)
-        for i in range(len(masks)):
-            rgb_mask = self.random_colour_masks(masks[i])
-            img = cv2.addWeighted(img, 1, rgb_mask, 0.5, 0)
-            cv2.rectangle(img, boxes[i][0], boxes[i][1],
-                        color=(0, 255, 0), thickness=rect_th)
-            cv2.putText(img, pred_cls[i], boxes[i][0], cv2.FONT_HERSHEY_SIMPLEX,
-                        text_size, (0, 255, 0), thickness=text_th)
-        plt.figure(figsize=(20, 30))
-        plt.imshow(img)
-        plt.xticks([])
-        plt.yticks([])
-        plt.savefig("mask_rcnn_result.png")
+
+        if return_type == "PIL":
+            for i in range(len(masks)):
+                rgb_mask = self.random_colour_masks(masks[i])
+                img = cv2.addWeighted(img, 1, rgb_mask, 0.5, 0)
+                cv2.rectangle(img, boxes[i][0], boxes[i][1],
+                            color=(0, 255, 0), thickness=rect_th)
+                cv2.putText(img, pred_cls[i], boxes[i][0], cv2.FONT_HERSHEY_SIMPLEX,
+                            text_size, (0, 255, 0), thickness=text_th)
+            im_pil = Image.fromarray(img)
+            #cv2.imwrite("mask_rcnn_result.png", img)
+            return (im_pil, masks, boxes, pred_cls)
+
+        #plt.figure(figsize=(20, 30))
+        #plt.imshow(img)
+        #plt.xticks([])
+        #plt.yticks([])
+        #plt.savefig("mask_rcnn_result.png")
         #plt.show()
 
