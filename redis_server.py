@@ -60,8 +60,8 @@ async def main():
 
             response_stream = f"{REDIS_STREAM_OUT}-{id}"
 
-            await r.xadd(REDIS_STREAM_OUT, dict(_transfer="stream", reply_to=id, stream=response_stream))
             response_id = await r.xadd(response_stream, dict(_transfer="inline", request_id=id, data=msgpack.packb(dict(image=img_bytes, masks=masks, boxes=boxes, pred_cls=pred_cls))))
+            await r.xadd(REDIS_STREAM_OUT, dict(_transfer="stream", reply_to=id, stream=response_stream))
             print(f"produced result on {response_stream} with id {response_id}")
 
             latest_id = id
