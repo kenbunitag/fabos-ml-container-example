@@ -7,7 +7,9 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /code
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
-EXPOSE 5000
 RUN echo abc2
+COPY redis_server.py .
+COPY ml_models.py .
 COPY . .
+EXPOSE 5000
 CMD ["python", "redis_server.py"]

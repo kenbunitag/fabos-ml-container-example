@@ -23,6 +23,10 @@ async def main():
     latest_id = "0"
     await r.delete(REDIS_STREAM_IN)
     await r.delete(REDIS_STREAM_OUT)
+    old_keys = await r.keys(f"{REDIS_STREAM_OUT}*")
+    if len(old_keys) > 0:
+        print(f"deleting old responses: {old_keys}")
+        await r.delete(*old_keys)
 
     mask_rcnn = ml_models.MaskRCNNWrapper()
 

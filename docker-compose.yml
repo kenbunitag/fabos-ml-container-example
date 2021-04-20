@@ -24,3 +24,20 @@ services:
 
   redis:
     image: "redis:alpine"
+
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+    - REDIS_HOSTS=local:redis:6379
+    ports:
+    - "8081:8081"
+
+#  redis-browser:
+#    build: 
+#      context: ./
+#      dockerfile: ./Dockerfile_RedisBrowser
+#    ports:
+#      - "4567:4567"
