@@ -2,7 +2,7 @@
 Example container that serves a pretrained ML Models with a simple flask-based webserver.
 
 
-## Run as python app
+## Option 1: Run as python app
 ```
 # Install pytroch
 conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
@@ -16,7 +16,7 @@ python app.py
 # open browser at http://localhost:5000
 ```
 
-## Run in Docker
+## Option 2: Run in Docker
 ```
 docker-compose up
 
